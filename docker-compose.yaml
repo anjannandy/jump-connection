@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=welcome
+      - POSTGRES_DB=dev
+
+  ssh-server:
+    image: linuxserver/openssh-server:latest
+    container_name: ssh-server
+    ports:
+      - "2222:2222"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - USER_NAME=test
+      - USER_PASSWORD=test123
+      - PASSWORD_ACCESS=true
+
+  telnet-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.telnet
+    ports:
+      - "23:23"
+
+  jump-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.jump
+    ports:
+      - "2225:22"

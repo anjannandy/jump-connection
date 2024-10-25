@@ -1,0 +1,19 @@
+FROM ubuntu:latest
+
+# Install OpenSSH and telnet client
+RUN apt-get update && apt-get install -y openssh-server telnet
+
+# Create a user and set the password
+RUN useradd -m -s /bin/bash jumpuser && echo "jumpuser:password" | chpasswd
+
+# Configure SSH
+RUN mkdir /var/run/sshd
+RUN echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+RUN echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+RUN echo "AllowUsers jumpuser" >> /etc/ssh/sshd_config
+
+# Expose SSH port
+EXPOSE 22
+
+# Start SSH service
+CMD ["/usr/sbin/sshd", "-D"]
